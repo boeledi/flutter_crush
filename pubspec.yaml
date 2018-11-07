@@ -1,0 +1,69 @@
+name: flutter_crush
+description: A new Flutter project.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  rxdart: ^0.19.0
+  audioplayers: ^0.7.8
+  provider: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/background/background.jpg
+    - assets/images/background/background2.jpg
+    - assets/levels.json
+    - assets/images/borders/border_1.png
+    - assets/images/borders/border_2.png
+    - assets/images/borders/border_3.png
+    - assets/images/borders/border_4.png
+    - assets/images/borders/border_5.png
+    - assets/images/borders/border_7.png
+    - assets/images/borders/border_8.png
+    - assets/images/borders/border_10.png
+    - assets/images/borders/border_11.png
+    - assets/images/borders/border_12.png
+    - assets/images/borders/border_13.png
+    - assets/images/borders/border_14.png
+    - assets/images/borders/border_15.png
+    - assets/images/tiles/blue.png
+    - assets/images/tiles/green.png
+    - assets/images/tiles/orange.png
+    - assets/images/tiles/purple.png
+    - assets/images/tiles/red.png
+    - assets/images/tiles/yellow.png
+    - assets/images/tiles/multicolor.png
+    - assets/images/deco/wall.png
+    - assets/images/deco/ice_01.png
+    - assets/images/deco/ice_02.png
+    - assets/images/bombs/blue.png
+    - assets/images/bombs/green.png
+    - assets/images/bombs/orange.png
+    - assets/images/bombs/purple.png
+    - assets/images/bombs/red.png
+    - assets/images/bombs/yellow.png
+    - assets/images/bombs/fireball.png
+    - assets/images/bombs/multi_color.png
+    - assets/images/bombs/mine.png
+    - assets/images/bombs/tnt.png
+    - assets/images/bombs/rocket.png
+    - assets/audio/swap.wav
+    - assets/audio/move_down.wav
+    - assets/audio/bomb.wav
+    - assets/audio/game_start.wav
+    - assets/audio/win.wav
+    - assets/audio/lost.wav
