@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/controllers/game_controller.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/objective.dart';
@@ -8,7 +10,7 @@ import 'package:flutter_crush/model/tile.dart';
 import 'package:quiver/iterables.dart';
 import 'package:rxdart/rxdart.dart';
 
-class GameBloc {
+class GameBloc implements BlocBase {
   // Max number of tiles per row (and per column)
   static double kMaxTilesPerRowAndColumn = 12.0;
   static double kMaxTilesSize = 28.0;

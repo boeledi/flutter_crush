@@ -1,9 +1,9 @@
 import 'dart:math' as math;
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/helpers/array_2d.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Board extends StatelessWidget {
   Board({
@@ -108,7 +108,7 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    gameBloc = Provider.of<GameBloc>(context, listen: false);
+    gameBloc = BlocProvider.of<GameBloc>(context);
     final Size screenSize = MediaQuery.of(context).size;
     final double maxDimension = math.min(screenSize.width, screenSize.height);
     final double maxTileWidth = math.min(maxDimension / GameBloc.kMaxTilesPerRowAndColumn, GameBloc.kMaxTilesSize);

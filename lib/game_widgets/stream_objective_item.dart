@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/bloc/objective_bloc.dart';
 import 'package:flutter_crush/model/objective.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class StreamObjectiveItem extends StatefulWidget {
   StreamObjectiveItem({
@@ -38,7 +38,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = Provider.of<GameBloc>(context, listen: false);
+    gameBloc = BlocProvider.of<GameBloc>(context);
     _createBloc();
   } 
 

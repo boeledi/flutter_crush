@@ -1,6 +1,6 @@
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 ///
 /// StreamMovesLeftCounter
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class StreamMovesLeftCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    GameBloc gameBloc = Provider.of<GameBloc>(context, listen: false);
+    GameBloc gameBloc = BlocProvider.of<GameBloc>(context);
 
     return Row(
       mainAxisSize: MainAxisSize.min,

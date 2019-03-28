@@ -1,4 +1,5 @@
 import 'package:flutter_crush/animations/shine_effect.dart';
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/double_curved_container.dart';
 import 'package:flutter_crush/game_widgets/game_level_button.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_crush/game_widgets/shadowed_text.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/pages/game_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    GameBloc gameBloc = Provider.of<GameBloc>(context, listen: false);
+    GameBloc gameBloc = BlocProvider.of<GameBloc>(context);
     MediaQueryData mediaQueryData = MediaQuery.of(context);
     Size screenSize = mediaQueryData.size;
     double levelsWidth = -100.0 + ((mediaQueryData.orientation == Orientation.portrait) ? screenSize.width : screenSize.height);

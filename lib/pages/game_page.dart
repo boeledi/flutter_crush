@@ -4,6 +4,7 @@ import 'package:flutter_crush/animations/animation_chain.dart';
 import 'package:flutter_crush/animations/animation_combo_collapse.dart';
 import 'package:flutter_crush/animations/animation_combo_three.dart';
 import 'package:flutter_crush/animations/animation_swap_tiles.dart';
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/board.dart';
 import 'package:flutter_crush/game_widgets/game_moves_left_panel.dart';
@@ -20,7 +21,6 @@ import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/row_col.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class GamePage extends StatefulWidget {
   static Route<dynamic> route(Level level) {
@@ -68,7 +68,7 @@ class _GamePageState extends State<GamePage>
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = Provider.of<GameBloc>(context, listen: false);
+    gameBloc = BlocProvider.of<GameBloc>(context);
 
     // Reset the objectives
     gameBloc.reset();

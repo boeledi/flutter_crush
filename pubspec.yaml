@@ -13,7 +13,6 @@ dependencies:
   cupertino_icons: ^0.1.2
   rxdart: ^0.19.0
   audioplayers: ^0.7.8
-  provider: ^1.1.1
 
 dev_dependencies:
   flutter_test:

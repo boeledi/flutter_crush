@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/model/objective_event.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ObjectiveBloc {
+class ObjectiveBloc implements BlocBase {
   ///
   /// A stream only meant to return whether THIS objective type is part of the Objective events
   ///

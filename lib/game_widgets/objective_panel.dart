@@ -1,15 +1,15 @@
+import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/stream_objective_item.dart';
 import 'package:flutter_crush/model/level.dart';
 import 'package:flutter_crush/model/objective.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ObjectivePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GameBloc gameBloc = Provider.of<GameBloc>(context, listen: false);
+    final GameBloc gameBloc = BlocProvider.of<GameBloc>(context);
     final Level level = gameBloc.gameController.level;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final EdgeInsets paddingTop = EdgeInsets.only(top: (orientation == Orientation.portrait ? 10.0 : 0.0));
