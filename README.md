@@ -4,7 +4,7 @@ How to build a Math-3 game, like Candy Crush, Bejeweled, FishDom… in Flutter.
 
 Source code of the article available on [didierboelens.com](https://www.didierboelens.com/2018/11/flutter---crush/)
 
-![Flutter Crush](https://www.didierboelens.com/images/flutter_crush_game_page.png)
+![Flutter Crush](https://www.didierboelens.com/images/blog/flutter_crush_game_page.png)
 <br/><br/>
 
 ---
