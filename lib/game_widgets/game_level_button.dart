@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class GameLevelButton extends StatelessWidget {
   GameLevelButton({
-    Key key,
-    this.text: '',
-    this.width: 60.0,
-    this.height: 60.0,
-    this.borderRadius: 50.0,
-    @required this.onTap,
+    Key? key,
+    this.text = '',
+    this.width = 60.0,
+    this.height = 60.0,
+    this.borderRadius = 50.0,
+    required this.onTap,
   }) : super(key: key);
 
   final String text;
@@ -29,9 +29,9 @@ class GameLevelButton extends StatelessWidget {
         // Colors are easy thanks to Flutter's
         // Colors class.
         Colors.white,
-        Colors.grey[100],
-        Colors.grey[200],
-        Colors.grey[300],
+        Colors.grey[100]!,
+        Colors.grey[200]!,
+        Colors.grey[300]!,
       ],
     );
 

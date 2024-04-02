@@ -4,8 +4,8 @@
 /// Identifies the row from which an avalanche needs to be tested
 class AvalancheTest {
   AvalancheTest({
-    this.row,
-    this.delay,
+    required this.row,
+    required this.delay,
   });
 
   final int row;

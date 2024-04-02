@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class ShineEffect extends StatefulWidget {
   ShineEffect({
-    Key key,
-    this.offset: Offset.zero,
+    Key? key,
+    this.offset = Offset.zero,
   }) : super(key: key);
 
   final Offset offset;
@@ -15,7 +15,7 @@ class ShineEffect extends StatefulWidget {
 
 class _ShineEffectState extends State<ShineEffect>
     with SingleTickerProviderStateMixin {
-  AnimationController _shineController;
+  late AnimationController _shineController;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _ShineEffectState extends State<ShineEffect>
 
   @override
   void dispose() {
-    _shineController?.dispose();
+    _shineController.dispose();
     super.dispose();
   }
 

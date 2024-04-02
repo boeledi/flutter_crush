@@ -1,25 +1,20 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_crush/game_widgets/double_curved_container.dart';
 import 'package:flutter_crush/helpers/audio.dart';
-import 'package:flutter_crush/model/level.dart';
-import 'package:flutter/material.dart';
 
-class GameOverSplash extends StatefulWidget {
-  GameOverSplash({
+class GameReshufflingSplash extends StatefulWidget {
+  GameReshufflingSplash({
     Key? key,
-    required this.success,
-    required this.level,
-    required this.onComplete,
+    this.onComplete,
   }) : super(key: key);
 
-  final Level level;
-  final VoidCallback onComplete;
-  final bool success;
+  final VoidCallback? onComplete;
 
   @override
-  _GameOverSplashState createState() => _GameOverSplashState();
+  _GameReshufflingSplashState createState() => _GameReshufflingSplashState();
 }
 
-class _GameOverSplashState extends State<GameOverSplash>
+class _GameReshufflingSplashState extends State<GameReshufflingSplash>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animationAppear;
@@ -29,7 +24,7 @@ class _GameOverSplashState extends State<GameOverSplash>
     super.initState();
 
     _controller = AnimationController(
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       vsync: this,
     )
       ..addListener(() {
@@ -37,8 +32,10 @@ class _GameOverSplashState extends State<GameOverSplash>
       })
       ..addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed) {
-          widget.onComplete();
-                }
+          if (widget.onComplete != null) {
+            widget.onComplete?.call();
+          }
+        }
       });
 
     _animationAppear = Tween<double>(
@@ -72,9 +69,9 @@ class _GameOverSplashState extends State<GameOverSplash>
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
 
-    Color darkColor = widget.success ? Colors.green[700]! : Colors.red[700]!;
-    Color lightColor = widget.success ? Colors.green : Colors.red;
-    String message = widget.success ? "You Win" : "Game Over";
+    Color darkColor = Colors.blue[700]!;
+    Color lightColor = Colors.blue;
+    String message = "Reshuffling";
 
     return AnimatedBuilder(
       animation: _animationAppear,

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class DoubleCurvedContainer extends StatelessWidget {
   DoubleCurvedContainer({
-    Key key,
-    @required this.width,
-    @required this.height,
-    @required this.child,
-    @required this.outerColor,
-    @required this.innerColor,
+    Key? key,
+    required this.width,
+    required this.height,
+    required this.child,
+    required this.outerColor,
+    required this.innerColor,
   }) : super(key: key);
 
   final double width;

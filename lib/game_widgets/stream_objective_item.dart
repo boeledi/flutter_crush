@@ -4,14 +4,15 @@ import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/bloc/objective_bloc.dart';
 import 'package:flutter_crush/model/objective.dart';
+import 'package:flutter_crush/model/objective_event.dart';
 import 'package:flutter_crush/model/tile.dart';
 import 'package:flutter/material.dart';
 
 class StreamObjectiveItem extends StatefulWidget {
   StreamObjectiveItem({
-    Key key,
-    this.objective,
-  }): super(key: key);
+    Key? key,
+    required this.objective,
+  }) : super(key: key);
 
   final Objective objective;
 
@@ -22,8 +23,8 @@ class StreamObjectiveItem extends StatefulWidget {
 }
 
 class StreamObjectiveItemState extends State<StreamObjectiveItem> {
-  ObjectiveBloc _bloc;
-  GameBloc gameBloc;
+  late ObjectiveBloc _bloc;
+  late GameBloc gameBloc;
 
   ///
   /// In order to determine whether this particular Objective is
@@ -31,16 +32,16 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
   /// that gives us the list of all Objective Events to THIS instance
   /// of the BLoC
   ///
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   @override
-  void didChangeDependencies(){
+  void didChangeDependencies() {
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = BlocProvider.of<GameBloc>(context);
+    gameBloc = BlocProvider.of<GameBloc>(context)!.bloc;
     _createBloc();
-  } 
+  }
 
   ///
   /// As Widgets can be changed by the framework at any time,
@@ -55,7 +56,7 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _disposeBloc();
     super.dispose();
   }
@@ -65,13 +66,14 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
 
     // Simple pipe from the stream that lists all the ObjectiveEvents into
     // the BLoC that processes THIS particular Objective type
-    _subscription = gameBloc.outObjectiveEvents.listen(_bloc.sendObjectives);
+    _subscription = gameBloc.outObjectiveEvents
+        .listen((ObjectiveEvent e) => _bloc.sendObjectives(e));
   }
 
   void _disposeBloc() {
     _subscription?.cancel();
     _subscription = null;
-    _bloc?.dispose();
+    _bloc.dispose();
   }
 
   @override
@@ -79,7 +81,8 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
     //
     // Trick to get the image of the tile
     //
-    Tile tile = Tile(type: widget.objective.type, level: gameBloc.gameController.level);
+    Tile tile =
+        Tile(type: widget.objective.type, level: gameBloc.gameController.level);
     tile.build();
 
     return Container(
@@ -93,15 +96,14 @@ class StreamObjectiveItemState extends State<StreamObjectiveItem> {
             child: tile.widget,
           ),
           StreamBuilder<int>(
-            initialData: widget.objective.count,
-            stream: _bloc.objectiveCounter,
-            builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-              return Text(
-                '${snapshot.data}',
-                style: TextStyle(color: Colors.black),
-              );
-            }
-          ),
+              initialData: widget.objective.count,
+              stream: _bloc.objectiveCounter,
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                return Text(
+                  '${snapshot.data}',
+                  style: TextStyle(color: Colors.black),
+                );
+              }),
         ],
       ),
     );

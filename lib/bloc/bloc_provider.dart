@@ -1,58 +1,113 @@
 import 'package:flutter/material.dart';
 
-Type _typeOf<T>() => T;
+typedef BlocBuilder<T> = T Function();
 
 abstract class BlocBase {
   void dispose();
 }
 
-class BlocProvider<T extends BlocBase> extends StatefulWidget {
-  BlocProvider({
-    Key key,
-    @required this.child,
-    @required this.bloc,
-  }): super(key: key);
+///
+/// BlocProvider
+///
+/// Usage:
+///
+/// BlocProvider<T>(
+///   blocBuilder: () => Bloc(),
+///   blocDispose: (T bloc) { bloc?.dispose();},
+///   child:
+/// )
+///
+/// Arguments:
+///
+///   [blocBuilder] Compulsory.
+///   Function which is only called ONCE and requests to provide the instance of the BLoC
+///   The instance of the BLoC can be initiazed at the level of this function or could
+///   have been initialized somewhere else.
+///
+///   [child] Compulsory.
+///   The Widget, child of this BlocProvider.
+///
+class BlocProvider<T> extends StatefulWidget {
+  const BlocProvider({
+    super.key,
+    required this.child,
+    required this.bloc,
+  });
 
   final Widget child;
   final T bloc;
 
   @override
-  _BlocProviderState<T> createState() => _BlocProviderState<T>();
+  State<BlocProvider<T>> createState() => BlocProviderState<T>();
 
-  static T of<T extends BlocBase>(BuildContext context){
-    final type = _typeOf<_BlocProviderInherited<T>>();
-    _BlocProviderInherited<T> provider = context.ancestorInheritedElementForWidgetOfExactType(type)?.widget;
-    return provider?.bloc;
+  static BlocProviderInherited<T>? of<T>(BuildContext context,
+      {bool listen = false}) {
+    final InheritedElement? inheritedElement = context
+        .getElementForInheritedWidgetOfExactType<BlocProviderInherited<T>>();
+    if (inheritedElement == null) {
+      return null;
+    }
+
+    if (listen == true) {
+      ///
+      /// If we are listening to changes to rebuild,
+      /// let's register the context in the list of the ones
+      /// to be rebuilt
+      ///
+      context.dependOnInheritedWidgetOfExactType<BlocProviderInherited<T>>();
+    }
+
+    final BlocProviderInherited<T>? provider =
+        inheritedElement.widget as BlocProviderInherited<T>?;
+
+    return provider;
   }
 }
 
-class _BlocProviderState<T extends BlocBase> extends State<BlocProvider<T>>{
+class BlocProviderState<T> extends State<BlocProvider<T>> {
+  late T bloc;
+  late T previousBloc;
+
   @override
-  void dispose(){
-    widget.bloc?.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    previousBloc = widget.bloc;
+    bloc = widget.bloc;
   }
-  
+
+  void updateValue(T newBloc) {
+    previousBloc = bloc;
+    bloc = newBloc;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
-  Widget build(BuildContext context){
-    return new _BlocProviderInherited<T>(
-      bloc: widget.bloc,
+  Widget build(BuildContext context) {
+    return BlocProviderInherited<T>(
+      bloc: bloc,
+      state: this,
       child: widget.child,
     );
   }
 }
 
-class _BlocProviderInherited<T> extends InheritedWidget {
-  _BlocProviderInherited({
-    Key key,
-    @required Widget child,
-    @required this.bloc,
+class BlocProviderInherited<T> extends InheritedWidget {
+  const BlocProviderInherited({
+    Key? key,
+    required Widget child,
+    required this.bloc,
+    required this.state,
   }) : super(key: key, child: child);
 
   final T bloc;
+  final BlocProviderState<T> state;
 
   @override
-  bool updateShouldNotify(_BlocProviderInherited oldWidget) => true;
+  bool updateShouldNotify(BlocProviderInherited<T> oldWidget) {
+    return oldWidget.bloc != bloc;
+  }
 }
 
 /// -------------------------------------------------------------------
@@ -61,22 +116,22 @@ class _BlocProviderInherited<T> extends InheritedWidget {
 
 /// -------------------------------------------------------------------
 ///  Allows to define a series of embedded blocs
-/// 
+///
 ///  Rather than writing:
-/// 
+///
 ///   BlocProvider<A>(
-///     bloc: A(),
+///     blocBuilder: () => A(),
 ///     child: BlocProvider<B>(
-///       bloc: B(),
+///       blocBuilder: () => B(),
 ///       child: BlocProvider<C>(
-///         bloc: C(),
+///         blocBuilder: () => C(),
 ///         child: Container(),
 ///       ),
 ///     ),
 ///   )
-/// 
+///
 ///  We can write:
-/// 
+///
 ///   blocsTree(
 ///     [
 ///       blocTreeNode<A>(A()),
@@ -85,20 +140,75 @@ class _BlocProviderInherited<T> extends InheritedWidget {
 ///     ],
 ///     child: Container(),
 ///   ),
-/// 
+///
 ///   This is much easier to read and to complement.
 /// -------------------------------------------------------------------
-typedef BlocProvider _BuildWithChild(Widget child);
+typedef BlocBuildWithChild = BlocProvider Function(Widget child);
 
 Widget blocsTree(
-  List<_BuildWithChild> childlessBlocs, {
-  @required Widget child,
+  List<BlocBuildWithChild> childlessBlocs, {
+  required Widget child,
 }) {
   return childlessBlocs.reversed.fold<Widget>(
     child,
-    (Widget nextChild, _BuildWithChild childlessBloc) => childlessBloc(nextChild),
+    (Widget nextChild, BlocBuildWithChild childlessBloc) =>
+        childlessBloc(nextChild),
   );
 }
 
-_BuildWithChild blocTreeNode<T extends BlocBase>(T bloc) =>
+BlocBuildWithChild blocTreeNode<T>(T bloc) =>
     (Widget child) => BlocProvider<T>(bloc: bloc, child: child);
+
+typedef BlocWhenCallback<T> = Widget? Function(T oldValue, T value);
+
+extension BlocProviderContex on BuildContext {
+  /// -------------------------------------------------------
+  /// Replacement
+  ///     T? bloc = BlocProvider.of<T>(context)?.bloc
+  /// =>  T? bloc = context.blocRead<T>();
+  ///
+  ///  => No rebuild if bloc changes
+  /// -------------------------------------------------------
+  T? blocRead<T>() {
+    return BlocProvider.of<T>(this, listen: false)?.bloc;
+  }
+
+  /// -------------------------------------------------------
+  /// Replacement
+  ///     T? bloc = BlocProvider.of<T>(context, listen: true)?.bloc
+  /// =>  T? bloc = context.blocWatch<T>();
+  ///
+  /// => Rebuilds if bloc changes
+  /// -------------------------------------------------------
+  T? blocWatch<T>() {
+    return BlocProvider.of<T>(this, listen: true)?.bloc;
+  }
+
+  /// -------------------------------------------------------
+  /// Helper that simplifies the emitting of a new "value"
+  ///     Rather than writing BlocProvider.of<T>(context, listen: false)?.state.updateValue(newValue);
+  /// =>  context.blocUpdateValue<T>(newValue);
+  ///
+  /// WARNING: newValue MUST BE a NEW instance of T
+  /// -------------------------------------------------------
+  void blocUpdate<T>(T newValue) {
+    BlocProvider.of<T>(this, listen: false)?.state.updateValue(newValue);
+  }
+
+  /// -------------------------------------------------------
+  /// Listens to variations of T and gets both "old" and "new"
+  /// values
+  ///
+  /// -------------------------------------------------------
+  Widget? blocWhen<T>(BlocWhenCallback<T> callback, {bool listen = true}) {
+    final BlocProviderInherited<T>? provider =
+        BlocProvider.of<T>(this, listen: listen);
+    if (provider != null) {
+      return callback(
+        provider.state.previousBloc,
+        provider.state.bloc,
+      );
+    }
+    return null;
+  }
+}

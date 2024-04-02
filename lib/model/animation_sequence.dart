@@ -17,9 +17,9 @@ class AnimationSequence {
 
   // Constructor
   AnimationSequence({
-    this.tileType,
-    this.startDelay,
-    this.endDelay,
-    this.animations,
+    required this.tileType,
+    required this.startDelay,
+    required this.endDelay,
+    required this.animations,
   });
 }

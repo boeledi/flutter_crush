@@ -1,3 +1,6 @@
+//import 'dart:io';
+
+//import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter_crush/animations/shine_effect.dart';
 import 'package:flutter_crush/bloc/bloc_provider.dart';
 import 'package:flutter_crush/bloc/game_bloc.dart';
@@ -13,18 +16,28 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation _animation;
 
+/*   final String appId = Platform.isAndroid 
+  ? "ca-app-pub-9541831517245687~1206632744"
+  : "ca-app-pub-9541831517245687~1206632744";   // TO BE ADAPTED WITH APPLE
+
+  final String screenUnitId = Platform.isAndroid
+  ? "ca-app-pub-9541831517245687/1249605591"
+  : "ca-app-pub-9541831517245687/1249605591";   // TO BE ADAPTED WITH APPLE
+
+  InterstitialAd myInterstitial;
+ */
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3500),
-    )
-      ..addListener(() {
+    )..addListener(() {
         setState(() {});
       });
 
@@ -41,26 +54,43 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.forward();
+
+      // show the ads
+//      myInterstitial
+//        ..load()
+//        ..show(
+//          anchorOffset: 0.0,
+//          anchorType: AnchorType.bottom,
+//        );
     });
+
+    // Initialize the Ads
+//    myInterstitial = InterstitialAd(
+//      adUnitId: BannerAd.testAdUnitId,
+//    );
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
+//    myInterstitial?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    GameBloc gameBloc = BlocProvider.of<GameBloc>(context);
+    GameBloc gameBloc = BlocProvider.of<GameBloc>(context)!.bloc;
     MediaQueryData mediaQueryData = MediaQuery.of(context);
     Size screenSize = mediaQueryData.size;
-    double levelsWidth = -100.0 + ((mediaQueryData.orientation == Orientation.portrait) ? screenSize.width : screenSize.height);
+    double levelsWidth = -100.0 +
+        ((mediaQueryData.orientation == Orientation.portrait)
+            ? screenSize.width
+            : screenSize.height);
 
     return Scaffold(
-      body: WillPopScope(
+      body: PopScope(
         // No way to get back
-        onWillPop: () async => false,
+        canPop: false,
         child: Stack(
           children: <Widget>[
             Container(
@@ -96,7 +126,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       crossAxisCount: 3,
                       childAspectRatio: 1.01,
                     ),
-                    itemBuilder: (BuildContext context, int index){
+                    itemBuilder: (BuildContext context, int index) {
                       return GameLevelButton(
                         width: 80.0,
                         height: 60.0,
@@ -112,7 +142,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     },
                   ),
                 ),
-              ), 
+              ),
             ),
             Positioned(
               left: 0.0,
@@ -122,7 +152,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: DoubleCurvedContainer(
                   width: screenSize.width - 60.0,
                   height: 150.0,
-                  outerColor: Colors.blue[700],
+                  outerColor: Colors.blue[700]!,
                   innerColor: Colors.blue,
                   child: Stack(
                     children: <Widget>[
@@ -136,7 +166,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           color: Colors.white,
                           fontSize: 26.0,
                           shadowOpacity: 1.0,
-                          offset: Offset(1.0,1.0),
+                          offset: Offset(1.0, 1.0),
                         ),
                       ),
                     ],

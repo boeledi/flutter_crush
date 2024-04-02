@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 
 class ObjectiveItem extends StatelessWidget {
   ObjectiveItem({
-    Key key,
-    this.objective,
-    this.level,
-  }): super(key: key);
+    Key? key,
+    required this.objective,
+    required this.level,
+  }) : super(key: key);
 
   final Objective objective;
   final Level level;

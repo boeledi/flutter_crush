@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/flutter_crush.iml" filepath="$PROJECT_DIR$/flutter_crush.iml" />
-      <module fileurl="file://$PROJECT_DIR$/flutter_crush_android.iml" filepath="$PROJECT_DIR$/flutter_crush_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/flutter_crush_android.iml" filepath="$PROJECT_DIR$/android/flutter_crush_android.iml" />
     </modules>
   </component>
 </project>

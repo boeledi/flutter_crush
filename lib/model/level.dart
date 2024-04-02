@@ -4,7 +4,7 @@ import 'package:quiver/iterables.dart';
 
 ///
 /// Level
-/// 
+///
 /// Definition of a level in terms of:
 ///  - grid template
 ///  - maximum number of moves
@@ -14,12 +14,12 @@ import 'package:quiver/iterables.dart';
 ///
 class Level extends Object {
   final int _index;
-  Array2d grid;
+  late Array2d grid;
   final int _rows;
   final int _cols;
-  List<Objective> _objectives;
+  late List<Objective> _objectives;
   final int _maxMoves;
-  int _movesLeft;
+  int _movesLeft = 0;
 
   //
   // Variables that depend on the physical layout of the device
@@ -30,39 +30,38 @@ class Level extends Object {
   double boardTop = 0.0;
 
   Level.fromJson(Map<String, dynamic> json)
-    : _index = json["level"],
-      _rows = json["rows"],
-      _cols = json["cols"],
-      _maxMoves = json["moves"]
-    {
-      // Initialize the grid to the dimensions
-      grid = Array2d(_rows, _cols);
+      : _index = json["level"],
+        _rows = json["rows"],
+        _cols = json["cols"],
+        _maxMoves = json["moves"] {
+    // Initialize the grid to the dimensions
+    grid = Array2d(_rows, _cols);
 
-      // Populate the grid from the definition
-        //
-        // Trick
-        //  As the definition in the JSON file defines the 
-        //  rows (top-down) and also because we are recording
-        //  the grid (bottom-up), we need to reverse the
-        //  definition from the JSON file.
-        //
-      enumerate((json["grid"] as List).reversed).forEach((row){
-        enumerate(row.value.split(',')).forEach((cell){
-          grid[row.index][cell.index] = cell.value;
-        });
+    // Populate the grid from the definition
+    //
+    // Trick
+    //  As the definition in the JSON file defines the
+    //  rows (top-down) and also because we are recording
+    //  the grid (bottom-up), we need to reverse the
+    //  definition from the JSON file.
+    //
+    enumerate((json["grid"] as List).reversed).forEach((row) {
+      enumerate(row.value.split(',')).forEach((cell) {
+        grid[row.index][cell.index] = cell.value;
       });
+    });
 
-      // Retrieve the objectives
-      _objectives = (json["objective"] as List).map((item){
-        return Objective(item);
-      }).toList();
+    // Retrieve the objectives
+    _objectives = (json["objective"] as List).map((item) {
+      return Objective(item);
+    }).toList();
 
-      // First-time initialization
-      resetObjectives();
+    // First-time initialization
+    resetObjectives();
   }
 
   @override
-  String toString(){
+  String toString() {
     return "level: $index \n" + dumpArray2d(grid);
   }
 
@@ -76,7 +75,7 @@ class Level extends Object {
   //
   // Reset the objectives
   //
-  void resetObjectives(){
+  void resetObjectives() {
     _objectives.forEach((Objective objective) => objective.reset());
     _movesLeft = _maxMoves;
   }
@@ -84,7 +83,7 @@ class Level extends Object {
   //
   // Decrement the number of moves left
   //
-  int decrementMove(){
+  int decrementMove() {
     return (--_movesLeft).clamp(0, _maxMoves);
   }
 }

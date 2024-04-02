@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 
 class GameSplash extends StatefulWidget {
   GameSplash({
-    Key key,
-    this.level,
+    Key? key,
+    required this.level,
     this.onComplete,
   }) : super(key: key);
 
   final Level level;
-  final VoidCallback onComplete;
+  final VoidCallback? onComplete;
 
   @override
   _GameSplashState createState() => _GameSplashState();
@@ -21,8 +21,8 @@ class GameSplash extends StatefulWidget {
 
 class _GameSplashState extends State<GameSplash>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animationAppear;
+  late AnimationController _controller;
+  late Animation<double> _animationAppear;
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _GameSplashState extends State<GameSplash>
       ..addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed) {
           if (widget.onComplete != null) {
-            widget.onComplete();
+            widget.onComplete?.call();
           }
         }
       });
@@ -66,7 +66,7 @@ class _GameSplashState extends State<GameSplash>
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -92,7 +92,7 @@ class _GameSplashState extends State<GameSplash>
         child: DoubleCurvedContainer(
           width: screenSize.width,
           height: 150.0,
-          outerColor: Colors.blue[700],
+          outerColor: Colors.blue[700]!,
           innerColor: Colors.blue,
           child: Center(
             child: Column(
@@ -114,11 +114,11 @@ class _GameSplashState extends State<GameSplash>
           ),
         ),
       ),
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Positioned(
           left: 0.0,
           top: 150.0 + 100.0 * _animationAppear.value,
-          child: child,
+          child: child!,
         );
       },
     );

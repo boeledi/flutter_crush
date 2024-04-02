@@ -4,9 +4,9 @@
 class SwapMove {
   final int row;
   final int col;
-  
+
   const SwapMove({
-    this.row,
-    this.col,
+    required this.row,
+    required this.col,
   });
 }

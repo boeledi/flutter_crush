@@ -9,6 +9,7 @@ import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/game_widgets/board.dart';
 import 'package:flutter_crush/game_widgets/game_moves_left_panel.dart';
 import 'package:flutter_crush/game_widgets/game_over_splash.dart';
+import 'package:flutter_crush/game_widgets/game_reshuffling_splash.dart';
 import 'package:flutter_crush/game_widgets/game_splash.dart';
 import 'package:flutter_crush/game_widgets/objective_panel.dart';
 import 'package:flutter_crush/game_widgets/shadowed_text.dart';
@@ -31,8 +32,8 @@ class GamePage extends StatefulWidget {
   final Level level;
 
   GamePage({
-    Key key,
-    this.level,
+    Key? key,
+    required this.level,
   }) : super(key: key);
 
   @override
@@ -41,20 +42,20 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  OverlayEntry _gameSplash;
-  GameBloc gameBloc;
-  bool _allowGesture;
-  StreamSubscription _gameOverSubscription;
-  bool _gameOverReceived;
+  late AnimationController _controller;
+  OverlayEntry? _gameSplash;
+  late GameBloc gameBloc;
+  bool _allowGesture = false;
+  StreamSubscription? _gameOverSubscription;
+  bool? _gameOverReceived;
 
-  Tile gestureFromTile;
-  RowCol gestureFromRowCol;
-  Offset gestureOffsetStart;
-  bool gestureStarted;
+  Tile? gestureFromTile;
+  RowCol? gestureFromRowCol;
+  Offset? gestureOffsetStart;
+  bool? gestureStarted;
   static const double _MIN_GESTURE_DELTA = 2.0;
-  OverlayEntry _overlayEntryFromTile;
-  OverlayEntry _overlayEntryAnimateSwapTiles;
+  OverlayEntry? _overlayEntryFromTile;
+  OverlayEntry? _overlayEntryAnimateSwapTiles;
 
   @override
   void initState() {
@@ -68,7 +69,7 @@ class _GamePageState extends State<GamePage>
     super.didChangeDependencies();
 
     // Now that the context is available, retrieve the gameBloc
-    gameBloc = BlocProvider.of<GameBloc>(context);
+    gameBloc = BlocProvider.of<GameBloc>(context)!.bloc;
 
     // Reset the objectives
     gameBloc.reset();
@@ -84,7 +85,7 @@ class _GamePageState extends State<GamePage>
     _overlayEntryAnimateSwapTiles?.remove();
     _overlayEntryFromTile?.remove();
     _gameSplash?.remove();
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -259,7 +260,7 @@ class _GamePageState extends State<GamePage>
         rowCol.col >= widget.level.numberOfCols) return;
 
     // Check if the [row,col] corresponds to a possible swap
-    Tile selectedTile = gameBloc.gameController.grid[rowCol.row][rowCol.col];
+    Tile? selectedTile = gameBloc.gameController.grid[rowCol.row][rowCol.col];
     bool canBePlayed = false;
 
     // Reset
@@ -284,15 +285,15 @@ class _GamePageState extends State<GamePage>
           opaque: false,
           builder: (BuildContext context) {
             return Positioned(
-              left: gestureFromTile.x,
-              top: gestureFromTile.y,
+              left: gestureFromTile!.x,
+              top: gestureFromTile!.y,
               child: Transform.scale(
                 scale: 1.1,
-                child: gestureFromTile.widget,
+                child: gestureFromTile!.widget,
               ),
             );
           });
-      Overlay.of(context).insert(_overlayEntryFromTile);
+      Overlay.of(context).insert(_overlayEntryFromTile!);
     }
   }
 
@@ -325,9 +326,9 @@ class _GamePageState extends State<GamePage>
   void _onPanUpdate(DragUpdateDetails details) {
     if (!_allowGesture) return;
 
-    if (gestureStarted) {
+    if (gestureStarted == true) {
       // Try to determine the move type (up, down, left, right)
-      Offset delta = details.globalPosition - gestureOffsetStart;
+      Offset delta = details.globalPosition - gestureOffsetStart!;
       int deltaRow = 0;
       int deltaCol = 0;
       bool test = false;
@@ -344,15 +345,15 @@ class _GamePageState extends State<GamePage>
 
       if (test == true) {
         RowCol rowCol = RowCol(
-            row: gestureFromRowCol.row + deltaRow,
-            col: gestureFromRowCol.col + deltaCol);
+            row: gestureFromRowCol!.row + deltaRow,
+            col: gestureFromRowCol!.col + deltaCol);
         if (rowCol.col < 0 ||
             rowCol.col == widget.level.numberOfCols ||
             rowCol.row < 0 ||
             rowCol.row == widget.level.numberOfRows) {
           // Not possible, outside the boundaries
         } else {
-          Tile destTile = gameBloc.gameController.grid[rowCol.row][rowCol.col];
+          Tile? destTile = gameBloc.gameController.grid[rowCol.row][rowCol.col];
           bool canBePlayed = false;
 
           if (destTile != null) {
@@ -362,8 +363,8 @@ class _GamePageState extends State<GamePage>
 
           if (canBePlayed) {
             // We need to test the swap
-            bool swapAllowed =
-                gameBloc.gameController.swapContains(gestureFromTile, destTile);
+            bool swapAllowed = gameBloc.gameController
+                .swapContains(gestureFromTile!, destTile!);
 
             // Do not allow the gesture recognition during the animation
             _allowGesture = false;
@@ -373,7 +374,7 @@ class _GamePageState extends State<GamePage>
             _overlayEntryFromTile = null;
 
             // 2. Generate the up/down tiles
-            Tile upTile = gestureFromTile.cloneForAnimation();
+            Tile upTile = gestureFromTile!.cloneForAnimation();
             Tile downTile = destTile.cloneForAnimation();
 
             // 3. Remove both tiles from the game grid
@@ -381,7 +382,7 @@ class _GamePageState extends State<GamePage>
                 false;
             gameBloc
                 .gameController
-                .grid[gestureFromRowCol.row][gestureFromRowCol.col]
+                .grid[gestureFromRowCol!.row][gestureFromRowCol!.col]
                 .visible = false;
 
             setState(() {});
@@ -400,7 +401,7 @@ class _GamePageState extends State<GamePage>
                           .visible = true;
                       gameBloc
                           .gameController
-                          .grid[gestureFromRowCol.row][gestureFromRowCol.col]
+                          .grid[gestureFromRowCol!.row][gestureFromRowCol!.col]
                           .visible = true;
 
                       // 6. Remove the overlay Entry
@@ -410,16 +411,16 @@ class _GamePageState extends State<GamePage>
                       if (swapAllowed == true) {
                         // Remember if the tile we move is a bomb
                         bool isSourceTileABomb =
-                            Tile.isBomb(gestureFromTile.type);
+                            Tile.isBomb(gestureFromTile!.type!);
 
                         // Swap the 2 tiles
                         gameBloc.gameController
-                            .swapTiles(gestureFromTile, destTile);
+                            .swapTiles(gestureFromTile!, destTile);
 
                         // Get the tiles that need to be removed, following the swap
                         // We need to get the tiles from all possible combos
-                        Combo comboOne = gameBloc.gameController
-                            .getCombo(gestureFromTile.row, gestureFromTile.col);
+                        Combo comboOne = gameBloc.gameController.getCombo(
+                            gestureFromTile!.row, gestureFromTile!.col);
                         Combo comboTwo = gameBloc.gameController
                             .getCombo(destTile.row, destTile.col);
 
@@ -439,7 +440,7 @@ class _GamePageState extends State<GamePage>
                               Tile(
                                   row: destTile.row,
                                   col: destTile.row,
-                                  type: gestureFromTile.type),
+                                  type: gestureFromTile!.type),
                               gameBloc);
                         }
 
@@ -451,6 +452,16 @@ class _GamePageState extends State<GamePage>
 
                         // Record the fact that we have played a move
                         gameBloc.playMove();
+
+                        if (!gameBloc.gameController.stillMovesToPlay()) {
+                          // No moves left
+                          await _showReshufflingSplash();
+                          gameBloc.gameController.reshuffling();
+                          setState(() {});
+                        }
+
+                        // Make sure there is a correct delay before refreshing the screen
+                        await Future.delayed(const Duration(milliseconds: 500));
                       }
 
                       // 7. Reset
@@ -460,7 +471,7 @@ class _GamePageState extends State<GamePage>
                     },
                   );
                 });
-            Overlay.of(context).insert(_overlayEntryAnimateSwapTiles);
+            Overlay.of(context).insert(_overlayEntryAnimateSwapTiles!);
           }
         }
       }
@@ -473,7 +484,7 @@ class _GamePageState extends State<GamePage>
   //
   void _onTap() {
     if (!_allowGesture) return;
-    if (gestureFromTile != null && Tile.isBomb(gestureFromTile.type)) {
+    if (gestureFromTile != null && Tile.isBomb(gestureFromTile!.type!)) {
       // Prevent the user from playing during the animation
       _allowGesture = false;
 
@@ -481,7 +492,7 @@ class _GamePageState extends State<GamePage>
       Audio.playAsset(AudioType.bomb);
 
       // Proceed with explosion
-      gameBloc.gameController.proceedWithExplosion(gestureFromTile, gameBloc);
+      gameBloc.gameController.proceedWithExplosion(gestureFromTile!, gameBloc);
 
       // Rebuild the board and proceed with animations
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -496,6 +507,14 @@ class _GamePageState extends State<GamePage>
 
         // Record the fact that we have played a move
         gameBloc.playMove();
+
+        // Check if there are still moves to play
+        if (!gameBloc.gameController.stillMovesToPlay()) {
+          // No moves left
+          await _showReshufflingSplash();
+          gameBloc.gameController.reshuffling();
+          setState(() {});
+        }
       });
     }
   }
@@ -514,7 +533,7 @@ class _GamePageState extends State<GamePage>
   //
   Future<dynamic> _animateCombo(Combo combo) async {
     var completer = Completer();
-    OverlayEntry overlayEntry;
+    OverlayEntry? overlayEntry;
 
     switch (combo.type) {
       case ComboType.three:
@@ -539,7 +558,7 @@ class _GamePageState extends State<GamePage>
         // Play sound
         await Audio.playAsset(AudioType.move_down);
 
-        Overlay.of(context).insert(overlayEntry);
+        Overlay.of(context).insert(overlayEntry!);
         break;
 
       case ComboType.none:
@@ -554,9 +573,9 @@ class _GamePageState extends State<GamePage>
         _showComboTilesForAnimation(combo, false);
 
         // We need to create the resulting tile
-        Tile resultingTile = Tile(
-          col: combo.commonTile.col,
-          row: combo.commonTile.row,
+        Tile? resultingTile = Tile(
+          col: combo.commonTile!.col,
+          row: combo.commonTile!.row,
           type: combo.resultingTileType,
           level: widget.level,
           depth: 0,
@@ -569,7 +588,7 @@ class _GamePageState extends State<GamePage>
           builder: (BuildContext context) {
             return AnimationComboCollapse(
               combo: combo,
-              resultingTile: resultingTile,
+              resultingTile: resultingTile!,
               onComplete: () {
                 resultingTile = null;
                 overlayEntry?.remove();
@@ -584,7 +603,7 @@ class _GamePageState extends State<GamePage>
         // Play sound
         await Audio.playAsset(AudioType.swap);
 
-        Overlay.of(context).insert(overlayEntry);
+        Overlay.of(context).insert(overlayEntry!);
         break;
     }
     return completer.future;
@@ -653,8 +672,7 @@ class _GamePageState extends State<GamePage>
                   if (pendingSequences == 0) {
                     // Remove all OverlayEntries
                     overlayEntries.forEach((OverlayEntry entry) {
-                      entry?.remove();
-                      entry = null;
+                      entry.remove();
                     });
 
                     gameBloc.gameController.refreshGridAfterAnimations(
@@ -690,7 +708,7 @@ class _GamePageState extends State<GamePage>
   //
   void _onGameOver(bool success) async {
     // Prevent from bubbling
-    if (_gameOverReceived) {
+    if (_gameOverReceived == true) {
       return;
     }
     _gameOverReceived = true;
@@ -710,7 +728,7 @@ class _GamePageState extends State<GamePage>
             success: success,
             level: widget.level,
             onComplete: () {
-              _gameSplash.remove();
+              _gameSplash!.remove();
               _gameSplash = null;
 
               // as the game is over, let's leave the game
@@ -719,7 +737,7 @@ class _GamePageState extends State<GamePage>
           );
         });
 
-    Overlay.of(context).insert(_gameSplash);
+    Overlay.of(context).insert(_gameSplash!);
   }
 
   //
@@ -737,7 +755,7 @@ class _GamePageState extends State<GamePage>
           return GameSplash(
             level: widget.level,
             onComplete: () {
-              _gameSplash.remove();
+              _gameSplash?.remove();
               _gameSplash = null;
 
               // allow gesture detection
@@ -746,6 +764,39 @@ class _GamePageState extends State<GamePage>
           );
         });
 
-    Overlay.of(context).insert(_gameSplash);
+    Overlay.of(context).insert(_gameSplash!);
+  }
+
+  //
+  // SplashScreen to indicate that there is no more moves
+  // and a reshuffling is going to happen
+  //
+  Future<void> _showReshufflingSplash() async {
+    Completer completer = Completer();
+
+    // No gesture detection during the splash
+    _allowGesture = false;
+
+    // Show the splash
+    _gameSplash = OverlayEntry(
+        opaque: false,
+        builder: (BuildContext context) {
+          return GameReshufflingSplash(
+            onComplete: () {
+              _gameSplash?.remove();
+              _gameSplash = null;
+
+              // allow gesture detection
+              _allowGesture = true;
+
+              // gives the hand back
+              completer.complete();
+            },
+          );
+        });
+
+    Overlay.of(context).insert(_gameSplash!);
+
+    return completer.future;
   }
 }

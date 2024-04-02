@@ -1,7 +1,7 @@
-import 'package:flutter_crush/bloc/bloc_provider.dart';
-import 'package:flutter_crush/bloc/game_bloc.dart';
 import 'package:flutter_crush/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_crush/bloc/bloc_provider.dart';
+import 'package:flutter_crush/bloc/game_bloc.dart';
 
 class Application extends StatelessWidget {
   @override
